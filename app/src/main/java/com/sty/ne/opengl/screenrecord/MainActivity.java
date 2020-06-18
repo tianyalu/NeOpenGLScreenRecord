@@ -9,7 +9,7 @@ import android.os.Bundle;
 import com.sty.ne.opengl.screenrecord.util.PermissionUtils;
 
 public class MainActivity extends AppCompatActivity {
-    private String[] needPermissions = {Manifest.permission.CAMERA};
+    private String[] needPermissions = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -2,10 +2,15 @@ package com.sty.ne.opengl.screenrecord;
 
 import android.app.Activity;
 import android.graphics.SurfaceTexture;
+import android.opengl.EGL14;
+import android.opengl.EGLContext;
 import android.opengl.GLSurfaceView;
+import android.os.Environment;
+import android.util.Log;
 
 import com.sty.ne.opengl.screenrecord.filter.CameraFilter;
 import com.sty.ne.opengl.screenrecord.filter.ScreenFilter;
+import com.sty.ne.opengl.screenrecord.record.MyMediaRecorder;
 import com.sty.ne.opengl.screenrecord.util.CameraHelper;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -24,6 +29,7 @@ class MyGLRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvaila
     private CameraFilter mCameraFilter;
     private ScreenFilter mScreenFilter;
     private float[] mtx = new float[16];
+    private MyMediaRecorder mMediaRecorder;
 
     public MyGLRender(MyGLSurfaceView myGLSurfaceView) {
         this.myGLSurfaceView = myGLSurfaceView;
@@ -47,6 +53,13 @@ class MyGLRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvaila
 
         mCameraFilter = new CameraFilter(myGLSurfaceView.getContext());
         mScreenFilter = new ScreenFilter(myGLSurfaceView.getContext());
+
+        EGLContext eglContext = EGL14.eglGetCurrentContext();
+        String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() +
+                "sty/screen_record/record_" + System.currentTimeMillis() + ".mp4";
+        Log.d("sty", fileName);
+        mMediaRecorder = new MyMediaRecorder(800, 480, fileName, eglContext,
+                myGLSurfaceView.getContext());
     }
 
     /**
@@ -87,6 +100,9 @@ class MyGLRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvaila
         //int cTextureId = cccFilter.onDrawFrame(bTextureId);//渲染到FBO
         //...
         mScreenFilter.onDrawFrame(textureId); //渲染到屏幕 textureId : cTextureId
+
+        //渲染录制
+        mMediaRecorder.encodeFrame(textureId, mSurfaceTexture.getTimestamp());
     }
 
     /**

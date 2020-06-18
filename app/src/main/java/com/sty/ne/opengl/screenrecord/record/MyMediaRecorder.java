@@ -26,6 +26,7 @@ public class MyMediaRecorder {
     private Handler mHandler;
     private boolean isStart;
     private int index;
+    private MyEGL mEGL;
 
     public MyMediaRecorder(int mWidth, int mHeight, String mOutputPath, EGLContext mEglContext, Context mContext) {
         this.mWidth = mWidth;
@@ -81,12 +82,16 @@ public class MyMediaRecorder {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
+                mEGL = new MyEGL(mEglContext, mInputSurface, mContext, mWidth, mHeight);
                 mMediaCodec.start(); //启动编码器
                 isStart = true;
             }
         });
     }
 
+    /**
+     * 停止录制
+     */
     public void stop() {
         isStart = false;
         if(mHandler != null) {
@@ -121,7 +126,12 @@ public class MyMediaRecorder {
         }
     }
 
-    public void encodeFrame(int textureId, long timestamp) {
+    /**
+     * 渲染 & 取MediaCodec输出缓冲区数据
+     * @param textureId
+     * @param timestamp
+     */
+    public void encodeFrame(final int textureId, final long timestamp) {
         if(!isStart) {
             return;
         }
@@ -130,6 +140,9 @@ public class MyMediaRecorder {
                 @Override
                 public void run() {
                     //绘制
+                    if(mEGL != null) {
+                        mEGL.draw(textureId, timestamp);
+                    }
 
                     //从编码器中取数据
                     getEncodedData(false);

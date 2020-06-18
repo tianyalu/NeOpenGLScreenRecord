@@ -1,6 +1,7 @@
 package com.sty.ne.opengl.screenrecord.filter;
 
 import android.content.Context;
+import android.opengl.GLES11Ext;
 
 
 import com.sty.ne.opengl.screenrecord.R;
@@ -38,12 +39,24 @@ public class CameraFilter extends BaseFilter {
         //让FBO与 上面生成的FBO纹理发生关系
         //绑定
         glBindTexture(GL_TEXTURE_2D, mFrameBufferTextures[0]);
-
+        //目标 2d纹理 + 等级 + 格式 + 宽 + 高 + 边界 + 格式 + 数据类型（byte） + 像素数据
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
                 GL_UNSIGNED_BYTE, null);
         glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffers[0]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                mFrameBufferTextures[0], 0);
+        glFramebufferTexture2D(
+                //帧缓冲类型
+                GL_FRAMEBUFFER,
+                //附着点
+                // GL_COLOR_ATTACHMENT0 - 颜色缓冲
+                // GL_DEPTH_ATTACHMENT - 深度缓冲
+                // GL_STENCIL_ATTACHMENT - 模板缓冲
+                GL_COLOR_ATTACHMENT0,
+                //希望附着的纹理类型
+                GL_TEXTURE_2D,
+                //附着的纹理id
+                mFrameBufferTextures[0],
+                //等级一般0
+                0);
 
         //解绑
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -82,15 +95,17 @@ public class CameraFilter extends BaseFilter {
         //激活图层
         glActiveTexture(GL_TEXTURE0);
         //绑定纹理
-        glBindTexture(GL_TEXTURE_2D, textureId);
-        //glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId);
+//        glBindTexture(GL_TEXTURE_2D, textureId);
+        //因为这一层是摄像头后的第一层，所以需要使用扩展的 GL_TEXTURE_EXTERNAL_OES
+        glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId);
         glUniform1i(vTexture, 0);
 
         //通知OpenGL绘制
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         //解绑
-        glBindTexture(GL_TEXTURE_2D, 0);
+        //glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         //return textureId; //注意这里,不能反回摄像头的纹理id，而是返回与 FBO 绑定了的纹理id
