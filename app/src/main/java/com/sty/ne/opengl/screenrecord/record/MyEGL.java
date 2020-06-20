@@ -86,8 +86,8 @@ public class MyEGL {
                 EGL_ALPHA_SIZE, 8,
                 //渲染API类型
                 EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-                //android 兼容
-                EGLExt.EGL_RECORDABLE_ANDROID,
+                //告诉 EGL 以android 兼容的方式创建 Surface
+                EGLExt.EGL_RECORDABLE_ANDROID, 1,
                 EGL_NONE //一定要有结束符
 
         };

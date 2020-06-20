@@ -54,7 +54,7 @@ public class CameraHelper implements Camera.PreviewCallback, SurfaceHolder.Callb
     //但此时回调中data中的数据仍然是没有旋转过的
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-        Log.i(TAG, "onPreviewFrame");
+//        Log.i(TAG, "onPreviewFrame");
         switch (mRotation) {
             case Surface.ROTATION_0:
                 rotation90(data);

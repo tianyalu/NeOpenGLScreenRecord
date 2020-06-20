@@ -13,6 +13,9 @@ import com.sty.ne.opengl.screenrecord.filter.ScreenFilter;
 import com.sty.ne.opengl.screenrecord.record.MyMediaRecorder;
 import com.sty.ne.opengl.screenrecord.util.CameraHelper;
 
+import java.io.File;
+import java.io.IOException;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -55,10 +58,16 @@ class MyGLRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvaila
         mScreenFilter = new ScreenFilter(myGLSurfaceView.getContext());
 
         EGLContext eglContext = EGL14.eglGetCurrentContext();
-        String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() +
-                "sty/screen_record/record_" + System.currentTimeMillis() + ".mp4";
+        String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() +
+                "/sty/screen_record";
+        File dirPath = new File(filePath);
+        if(!dirPath.exists()) {
+            dirPath.mkdirs();
+        }
+        String fileName = filePath + "/record_" + System.currentTimeMillis() + ".mp4";
         Log.d("sty", fileName);
-        mMediaRecorder = new MyMediaRecorder(800, 480, fileName, eglContext,
+//        mMediaRecorder = new MyMediaRecorder(800, 480, fileName, eglContext,
+        mMediaRecorder = new MyMediaRecorder(480, 800, fileName, eglContext,
                 myGLSurfaceView.getContext());
     }
 
@@ -116,5 +125,26 @@ class MyGLRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvaila
 
     public void surfaceDestroyed() {
         mCameraHelper.stopPreview();
+    }
+
+    /**
+     * 开始录制
+     * @param speed
+     */
+    public void startRecording(float speed) {
+        Log.d("sty", "startRecording");
+        try {
+            mMediaRecorder.start(speed);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 停止录制
+     */
+    public void stopRecording() {
+        Log.d("sty", "stopRecording");
+        mMediaRecorder.stop();
     }
 }

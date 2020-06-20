@@ -27,6 +27,8 @@ public class MyMediaRecorder {
     private boolean isStart;
     private int index;
     private MyEGL mEGL;
+    private float mSpeed;
+    private long lastTimeUS;
 
     public MyMediaRecorder(int mWidth, int mHeight, String mOutputPath, EGLContext mEglContext, Context mContext) {
         this.mWidth = mWidth;
@@ -36,7 +38,8 @@ public class MyMediaRecorder {
         this.mContext = mContext;
     }
 
-    public void start() throws IOException {
+    public void start(float speed) throws IOException {
+        mSpeed = speed;
         /**
          * 1. 创建 MediaCodec 编码器
          * type：哪种类型的视频编码器
@@ -101,7 +104,7 @@ public class MyMediaRecorder {
                     getEncodedData(true);
 
                     if(mMediaCodec != null) {
-                        mMediaCodec.start();
+                        mMediaCodec.stop();
                         mMediaCodec.release();
                         mMediaCodec = null;
                     }
@@ -185,6 +188,15 @@ public class MyMediaRecorder {
                     bufferInfo.size = 0;
                 }
                 if(bufferInfo.size != 0) {
+                    //除以大于1的系数：加速
+                    //除以小于1的系数：减速
+                    bufferInfo.presentationTimeUs = (long) (bufferInfo.presentationTimeUs / mSpeed);
+                    //timestampUs 1277952 < lastTimestampUs 1277963 for video track
+                    if(bufferInfo.presentationTimeUs <= lastTimeUS) {
+                        bufferInfo.presentationTimeUs = (long) (lastTimeUS + 1_000_000 / 25 / mSpeed);
+                    }
+                    lastTimeUS = bufferInfo.presentationTimeUs;
+
                     //偏移位置
                     outputBuffer.position(bufferInfo.offset);
                     //可读写的总长度
