@@ -35,7 +35,7 @@ public class MyEGL {
         };
         mEGLSurface = eglCreateWindowSurface(mEglDisplay, mEGLConfig, mediaCodecSurface, attrib_list,
                 0);
-        //3. 让 mediaCodecSurface 和 mEGLSurface 绑定起来
+        //3. 让 mEglDisplay 和 mEGLSurface 绑定起来
 //        EGLDisplay dpy,
 //        EGLSurface draw,
 //        EGLSurface read,
