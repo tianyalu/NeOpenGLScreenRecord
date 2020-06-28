@@ -54,7 +54,7 @@ public class MyEGL {
 
     public void draw(int textureId, long timestamp) {
         //渲染
-        mScreenFilter.onDrawFrame(textureId);
+        mScreenFilter.onDrawFrame(textureId); //(若去掉此行代码，录制的视频为黑屏，且文件大小不对)
         //刷新时间戳
         EGLExt.eglPresentationTimeANDROID(mEglDisplay, mEGLSurface, timestamp);
         //交换缓冲区数据

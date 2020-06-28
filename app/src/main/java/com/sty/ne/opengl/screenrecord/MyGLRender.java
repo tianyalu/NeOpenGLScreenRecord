@@ -108,7 +108,7 @@ class MyGLRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvaila
         //int bTextureId = bbbFilter.onDrawFrame(aTextureId);//渲染到FBO
         //int cTextureId = cccFilter.onDrawFrame(bTextureId);//渲染到FBO
         //...
-        mScreenFilter.onDrawFrame(textureId); //渲染到屏幕 textureId : cTextureId
+        mScreenFilter.onDrawFrame(textureId); //渲染到屏幕 textureId : cTextureId(若去掉此行代码，预览屏幕红屏)
 
         //渲染录制
         mMediaRecorder.encodeFrame(textureId, mSurfaceTexture.getTimestamp());

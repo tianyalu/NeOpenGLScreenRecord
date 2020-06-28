@@ -15,7 +15,8 @@ public class CameraHelper implements Camera.PreviewCallback, SurfaceHolder.Callb
     private static final String TAG = CameraHelper.class.getSimpleName();
     private static final int WIDTH = 800;
     private static final int HEIGHT = 480;
-    private static final int CAMERA_ID = Camera.CameraInfo.CAMERA_FACING_FRONT;
+//    private static final int CAMERA_ID = Camera.CameraInfo.CAMERA_FACING_FRONT;
+    private static final int CAMERA_ID = Camera.CameraInfo.CAMERA_FACING_BACK;
     private int mCameraID;
     private int mWidth;
     private int mHeight;
